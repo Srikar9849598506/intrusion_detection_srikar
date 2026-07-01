@@ -37,14 +37,14 @@ stages:
       size: 40063786
     - path: src/model_building.py
       hash: md5
-      md5: db5c3220d1b7632396bc7ec03179c2fc
-      size: 2459
+      md5: 82673cec557fd20fe71ffe8b4103fe5a
+      size: 2441
     outs:
     - path: models/scaler.pkl
       hash: md5
-      md5: 1d15c85135935db9255f869955df2b0e
-      size: 2677
-    - path: models/xgb_model.pkl
+      md5: 32f970cf623fd2c2e250f06a2f9eb73d
+      size: 2479
+    - path: models/xgb_model.json
       hash: md5
-      md5: b190f613cdd9b17ae9fe6c564095cc7e
-      size: 620844
+      md5: b9a6772354963e02ad18f2cd0e4d947f
+      size: 954367
