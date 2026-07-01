@@ -6,4 +6,4 @@ xgboost
 mlflow
 joblib
 pytest
-sqlite3
+sqlalchemy
