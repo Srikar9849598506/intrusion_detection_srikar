@@ -1,0 +1,50 @@
+schema: '2.0'
+stages:
+  data_ingestion:
+    cmd: python src/data_ingestion.py
+    deps:
+    - path: src/data_ingestion.py
+      hash: md5
+      md5: 3f9bb1f282ca32bd520c4004991542d6
+      size: 750
+    outs:
+    - path: data/ingested_data.csv
+      hash: md5
+      md5: 526bce65479b488a3f05e7d1a357ba26
+      size: 82503625
+  data_preprocessing:
+    cmd: python src/data_preprocessing.py
+    deps:
+    - path: data/ingested_data.csv
+      hash: md5
+      md5: 526bce65479b488a3f05e7d1a357ba26
+      size: 82503625
+    - path: src/data_preprocessing.py
+      hash: md5
+      md5: 2bd1b50024d56d1492dedef41f778092
+      size: 1647
+    outs:
+    - path: data/preprocessed_data.csv
+      hash: md5
+      md5: 49aadbc5cc57d3ac3ad680976b004e79
+      size: 40063786
+  model_training:
+    cmd: python src/model_building.py
+    deps:
+    - path: data/preprocessed_data.csv
+      hash: md5
+      md5: 49aadbc5cc57d3ac3ad680976b004e79
+      size: 40063786
+    - path: src/model_building.py
+      hash: md5
+      md5: db5c3220d1b7632396bc7ec03179c2fc
+      size: 2459
+    outs:
+    - path: models/scaler.pkl
+      hash: md5
+      md5: 1d15c85135935db9255f869955df2b0e
+      size: 2677
+    - path: models/xgb_model.pkl
+      hash: md5
+      md5: b190f613cdd9b17ae9fe6c564095cc7e
+      size: 620844
