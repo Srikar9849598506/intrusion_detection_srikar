@@ -4,7 +4,7 @@ import pandas as pd
 def test_mlflow_accuracy_threshold():
 
     # 1. Point to MLflow tracking store
-    mlflow.set_tracking_uri("file:./mlruns")
+    mlflow.set_tracking_uri("sqlite:///mlflow.db")
 
     # 2. Get experiment
     experiment = mlflow.get_experiment_by_name("XGBoost_Experiment")
