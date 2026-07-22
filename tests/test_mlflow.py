@@ -1,97 +1,34 @@
-import pandas as pd
+import mlflow
+
 
 def test_mlflow_accuracy_threshold():
 
-    # 1. Point to MLflow tracking store
-    mlflow.set_tracking_uri("file:./mlruns")
+    # Connect to MLflow database
+    mlflow.set_tracking_uri("sqlite:///mlflow.db")
 
-    # 2. Get experiment
+    # Get experiment
     experiment = mlflow.get_experiment_by_name("XGBoost_Experiment")
 
+    assert experiment is not None, "MLflow experiment not found"
 
-def load_data():
-    """Load data safely for CI/CD"""
-    path = "data/preprocessed_data.csv"
+    # Get all runs from experiment
+    runs = mlflow.search_runs(
+        experiment_ids=[experiment.experiment_id]
+    )
 
-    if not os.path.exists(path):
-        raise FileNotFoundError(f"Dataset not found at {path}")
+    assert not runs.empty, "No MLflow runs found"
 
-    return pd.read_csv(path)
+    # Get latest run
+    latest_run = runs.iloc[0]
 
+    # Extract accuracy
+    accuracy = latest_run["metrics.accuracy"]
 
-def build_model():
+    print(f"Model accuracy: {accuracy}")
 
-    preprocessed_data = load_data()
+    # Accuracy threshold
+    threshold = 0.90
 
-    if preprocessed_data.empty:
-        print("❌ Data is empty")
-        return None
-
-    # create model folder
-    os.makedirs("models", exist_ok=True)
-
-    scaler = StandardScaler()
-
-    with mlflow.start_run():
-
-        # features and target
-        X = preprocessed_data.drop(columns=["binary_label"]).astype(float)
-        y = preprocessed_data["binary_label"]
-
-        # split
-        X_train, X_test, y_train, y_test = train_test_split(
-            X, y, test_size=0.2, random_state=42
-        )
-
-        # scaling
-        X_train_scaled = scaler.fit_transform(X_train)
-        X_test_scaled = scaler.transform(X_test)
-
-        # model
-        model = XGBClassifier(
-            n_estimators=200,
-            max_depth=6,
-            learning_rate=0.1,
-            random_state=42
-        )
-
-        # train
-        model.fit(X_train_scaled, y_train)
-
-        # predictions
-        preds = model.predict(X_test_scaled)
-
-        # accuracy
-        acc = accuracy_score(y_test, preds)
-
-        # log params
-        mlflow.log_param("n_estimators", 200)
-        mlflow.log_param("max_depth", 6)
-        mlflow.log_param("learning_rate", 0.1)
-
-        # log metric
-        mlflow.log_metric("accuracy", acc)
-
-        # =========================
-        # SAVE ARTIFACTS
-        # =========================
-
-        model_path = "models/xgb_model.json"
-        scaler_path = "models/scaler.pkl"
-
-        model.save_model(model_path)
-        joblib.dump(scaler, scaler_path)
-
-        mlflow.log_artifact(model_path)
-        mlflow.log_artifact(scaler_path)
-
-        print("✅ Model trained successfully")
-        print(f"📊 Accuracy: {acc:.4f}")
-        print(f"💾 Model saved at: {model_path}")
-        print(f"💾 Scaler saved at: {scaler_path}")
-
-        return model, acc
-
-
-if __name__ == "__main__":
-    build_model()
+    assert accuracy >= threshold, (
+        f"Model accuracy {accuracy} is below threshold {threshold}"
+    )
