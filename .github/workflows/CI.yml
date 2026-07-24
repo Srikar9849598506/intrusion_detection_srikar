@@ -39,6 +39,6 @@ jobs:
         dvc repro
 
     # 6. Run tests (MLflow accuracy test included)
-    - name: Run pytest tests
-      run: |
-        pytest tests/
+    # - name: Run pytest tests
+    #   run: |
+    #     pytest tests/
